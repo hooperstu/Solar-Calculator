@@ -1,129 +1,147 @@
-/* Improved CSS for Solar Power Calculator */
-body, html {
-    margin: 0;
-    padding: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
-    color: #333;
-    height: 100%;
-}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Simple Solar Power Calculator with Fixed Degradation Rate">
+    <title>Solar Power Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+        }
+        label {
+            display: block;
+            margin-top: 10px;
+        }
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background: #28a745;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background: #218838;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background: #e9ecef;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+        }
+        .result-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        .result-table th, .result-table td {
+            border: 1px solid #ced4da;
+            padding: 8px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Solar Power Calculator</h1>
+        <form id="solarForm">
+            <label for="panelWattage">Panel Wattage (W):</label>
+            <input type="number" id="panelWattage" placeholder="Enter the wattage of a single panel" required>
+            
+            <label for="panelCount">Number of Panels:</label>
+            <input type="number" id="panelCount" placeholder="Enter the number of panels" required>
+            
+            <button type="button" onclick="calculateSolar()">Calculate</button>
+        </form>
+        <div id="result" class="result"></div>
+    </div>
 
-.container {
-    max-width: 800px;
-    margin: 50px auto;
-    background: #fff;
-    padding: 40px;
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-    border-radius: 10px;
-    text-align: center;
-    border: 1px solid #f1f1f1;
-}
+    <script>
+        function calculateSolar() {
+            // Get the input values
+            const panelWattage = parseFloat(document.getElementById('panelWattage').value);
+            const panelCount = parseFloat(document.getElementById('panelCount').value);
 
-h1 {
-    font-size: 28px;
-    color: #333;
-    margin-bottom: 30px;
-    letter-spacing: 1px;
-}
+            // Set a fixed degradation rate (e.g., 0.5% per year)
+            const degradationRate = 0.005;
 
-label {
-    display: block;
-    font-size: 16px;
-    font-weight: 600;
-    margin: 15px 0 5px;
-}
+            // Check if inputs are valid
+            if (isNaN(panelWattage) || isNaN(panelCount) || panelWattage <= 0 || panelCount <= 0) {
+                document.getElementById('result').innerHTML = '<p style="color:red;">Please enter valid values for panel wattage and number of panels.</p>';
+                return;
+            }
+            
+            // Calculate total system power (in kW)
+            const totalSystemPowerKW = (panelWattage * panelCount) / 1000;
 
-input[type="number"] {
-    width: 100%;
-    padding: 12px 15px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    box-sizing: border-box;
-    transition: border 0.3s;
-    font-size: 16px;
-}
+            // Estimate initial daily energy production (assuming 4 hours of peak sunlight)
+            const initialDailyEnergyProduction = totalSystemPowerKW * 4; // kWh/day
 
-input[type="number"]:focus {
-    outline: none;
-    border-color: #28a745;
-}
+            // Estimate initial annual energy production
+            const initialAnnualEnergyProduction = initialDailyEnergyProduction * 365; // kWh/year
 
-button {
-    display: block;
-    width: 100%;
-    padding: 15px;
-    background: #28a745;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 18px;
-    margin-top: 20px;
-    transition: background 0.3s, transform 0.2s;
-}
+            // Calculate energy production over 10 years, factoring in degradation
+            let energyProductionOverTime = [];
+            for (let year = 1; year <= 10; year++) {
+                // Calculate degraded production for the current year
+                const degradedProduction = initialAnnualEnergyProduction * Math.pow(1 - degradationRate, year);
+                energyProductionOverTime.push({
+                    year: year,
+                    annualProduction: degradedProduction.toFixed(2)
+                });
+            }
 
-button:hover {
-    background: #218838;
-    transform: translateY(-2px);
-}
+            // Display the results
+            let resultHTML = `
+                <h3>Calculation Results</h3>
+                <p><strong>Total System Power:</strong> ${totalSystemPowerKW.toFixed(2)} kW</p>
+                <p><strong>Initial Estimated Daily Energy Production:</strong> ${initialDailyEnergyProduction.toFixed(2)} kWh/day</p>
+                <p><strong>Initial Estimated Annual Energy Production:</strong> ${initialAnnualEnergyProduction.toFixed(2)} kWh/year</p>
+                <h4>Estimated Annual Energy Production Over 10 Years (With 0.5% Degradation)</h4>
+                <table class="result-table">
+                    <tr>
+                        <th>Year</th>
+                        <th>Annual Energy Production (kWh)</th>
+                    </tr>
+            `;
 
-.result {
-    margin-top: 30px;
-    padding: 20px;
-    background: #e9ecef;
-    border: 1px solid #ced4da;
-    border-radius: 10px;
-}
+            // Add yearly data to the table
+            energyProductionOverTime.forEach((data) => {
+                resultHTML += `
+                    <tr>
+                        <td>${data.year}</td>
+                        <td>${data.annualProduction}</td>
+                    </tr>
+                `;
+            });
 
-.result h3, .result h4 {
-    margin: 10px 0;
-    color: #495057;
-}
-
-.result p {
-    font-size: 16px;
-    margin: 10px 0;
-}
-
-.result-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-}
-
-.result-table th, .result-table td {
-    border: 1px solid #ddd;
-    padding: 15px;
-    text-align: center;
-    font-size: 16px;
-}
-
-.result-table th {
-    background: #f8f9fa;
-    font-weight: 700;
-    color: #495057;
-}
-
-.result-table tr:nth-child(even) {
-    background-color: #f2f2f2;
-}
-
-/* Responsive design */
-@media (max-width: 768px) {
-    .container {
-        padding: 20px;
-    }
-    
-    h1 {
-        font-size: 24px;
-    }
-
-    button {
-        font-size: 16px;
-    }
-
-    .result-table th, .result-table td {
-        font-size: 14px;
-        padding: 10px;
-    }
-}
+            resultHTML += `</table>`;
+            document.getElementById('result').innerHTML = resultHTML;
+        }
+    </script>
+</body>
+</html>
