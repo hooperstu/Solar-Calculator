@@ -3,23 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Simple Solar Power Calculator with Fixed Degradation Rate">
-    <title>Solar Power Calculator</title>
+    <meta name="description" content="Enhanced Solar Power Calculator with Fixed Degradation Rate">
+    <title>Enhanced Solar Power Calculator</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             background-color: #f4f4f4;
             padding: 20px;
+            margin: 0;
         }
         .container {
             max-width: 600px;
-            margin: 0 auto;
+            margin: 20px auto;
             background: #fff;
             padding: 20px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
         }
         h1 {
             text-align: center;
+            font-size: 24px;
+            color: #333;
         }
         label {
             display: block;
@@ -42,6 +46,7 @@
             border-radius: 5px;
             cursor: pointer;
             font-size: 16px;
+            transition: background 0.3s ease-in-out;
         }
         button:hover {
             background: #218838;
@@ -53,6 +58,12 @@
             border: 1px solid #ced4da;
             border-radius: 5px;
         }
+        .result h3, .result h4 {
+            margin-bottom: 10px;
+        }
+        .result p {
+            margin: 5px 0;
+        }
         .result-table {
             width: 100%;
             border-collapse: collapse;
@@ -63,43 +74,58 @@
             padding: 8px;
             text-align: center;
         }
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            input[type="number"], button {
+                padding: 12px;
+                font-size: 14px;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Solar Power Calculator</h1>
-        <form id="solarForm">
+        <h1>Enhanced Solar Power Calculator</h1>
+        <form id="solarForm" aria-label="Solar Power Calculator Form">
             <label for="panelWattage">Panel Wattage (W):</label>
-            <input type="number" id="panelWattage" placeholder="Enter the wattage of a single panel" required>
+            <input type="number" id="panelWattage" placeholder="Enter the wattage of a single panel" required min="1" step="0.1" aria-required="true">
             
             <label for="panelCount">Number of Panels:</label>
-            <input type="number" id="panelCount" placeholder="Enter the number of panels" required>
+            <input type="number" id="panelCount" placeholder="Enter the number of panels" required min="1" step="1" aria-required="true">
             
+            <label for="sunlightHours">Peak Sunlight Hours per Day:</label>
+            <input type="number" id="sunlightHours" placeholder="Enter average sunlight hours per day" required min="1" step="0.1" aria-required="true">
+
             <button type="button" onclick="calculateSolar()">Calculate</button>
         </form>
-        <div id="result" class="result"></div>
+        <div id="result" class="result" aria-live="polite"></div>
     </div>
 
     <script>
+        // Solar Power Calculator Function
         function calculateSolar() {
-            // Get the input values
+            // Retrieve input values
             const panelWattage = parseFloat(document.getElementById('panelWattage').value);
             const panelCount = parseFloat(document.getElementById('panelCount').value);
+            const sunlightHours = parseFloat(document.getElementById('sunlightHours').value);
 
-            // Set a fixed degradation rate (e.g., 0.5% per year)
+            // Define a fixed degradation rate
             const degradationRate = 0.005;
 
-            // Check if inputs are valid
-            if (isNaN(panelWattage) || isNaN(panelCount) || panelWattage <= 0 || panelCount <= 0) {
-                document.getElementById('result').innerHTML = '<p style="color:red;">Please enter valid values for panel wattage and number of panels.</p>';
+            // Validate inputs
+            if (isNaN(panelWattage) || isNaN(panelCount) || isNaN(sunlightHours) || panelWattage <= 0 || panelCount <= 0 || sunlightHours <= 0) {
+                document.getElementById('result').innerHTML = '<p style="color:red;">Please enter valid positive values for all fields.</p>';
                 return;
             }
             
             // Calculate total system power (in kW)
             const totalSystemPowerKW = (panelWattage * panelCount) / 1000;
 
-            // Estimate initial daily energy production (assuming 4 hours of peak sunlight)
-            const initialDailyEnergyProduction = totalSystemPowerKW * 4; // kWh/day
+            // Estimate initial daily energy production
+            const initialDailyEnergyProduction = totalSystemPowerKW * sunlightHours; // kWh/day
 
             // Estimate initial annual energy production
             const initialAnnualEnergyProduction = initialDailyEnergyProduction * 365; // kWh/year
@@ -129,7 +155,7 @@
                     </tr>
             `;
 
-            // Add yearly data to the table
+            // Append yearly data to the table
             energyProductionOverTime.forEach((data) => {
                 resultHTML += `
                     <tr>
