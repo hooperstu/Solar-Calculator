@@ -4,15 +4,34 @@ function calculateSolar() {
     const panelCount = parseFloat(document.getElementById('panelCount').value);
     let degradationRate = parseFloat(document.getElementById('degradationRate').value) / 100;
 
-    // Set default degradation rate if the input is invalid
-    if (isNaN(degradationRate) || degradationRate < 0) {
-        degradationRate = 0.005; // Default to 0.5%
+    // Clear previous error messages
+    document.getElementById('panelWattageError').innerText = '';
+    document.getElementById('panelCountError').innerText = '';
+    document.getElementById('degradationRateError').innerText = '';
+
+    let isValid = true;
+
+    // Validate panel wattage
+    if (isNaN(panelWattage) || panelWattage <= 0) {
+        document.getElementById('panelWattageError').innerText = 'Please enter a valid panel wattage greater than 0.';
+        isValid = false;
     }
 
-    // Check if inputs are valid
-    if (isNaN(panelWattage) || isNaN(panelCount) || panelWattage <= 0 || panelCount <= 0) {
-        document.getElementById('result').innerHTML = '<p style="color:red;">Please enter valid values for panel wattage, number of panels, and degradation rate.</p>';
-        document.getElementById('result').style.display = "block";
+    // Validate panel count
+    if (isNaN(panelCount) || panelCount <= 0) {
+        document.getElementById('panelCountError').innerText = 'Please enter a valid number of panels greater than 0.';
+        isValid = false;
+    }
+
+    // Validate degradation rate
+    if (isNaN(degradationRate) || degradationRate < 0) {
+        document.getElementById('degradationRateError').innerText = 'Please enter a valid degradation rate (Recommended: 0.5%).';
+        degradationRate = 0.005; // Default to 0.5% if invalid
+    }
+
+    // If any input is invalid, stop the calculation
+    if (!isValid) {
+        document.getElementById('result').style.display = "none";
         return;
     }
 
@@ -42,7 +61,7 @@ function calculateSolar() {
         <p><strong>Total System Power:</strong> ${totalSystemPowerKW.toFixed(2)} kW</p>
         <p><strong>Initial Estimated Daily Energy Production:</strong> ${initialDailyEnergyProduction.toFixed(2)} kWh/day</p>
         <p><strong>Initial Estimated Annual Energy Production:</strong> ${initialAnnualEnergyProduction.toFixed(2)} kWh/year</p>
-        <h4>Estimated Annual Energy Production Over 10 Years (With ${degradationRate * 100}% Degradation)</h4>
+        <h4>Estimated Annual Energy Production Over 10 Years (With ${(degradationRate * 100).toFixed(2)}% Degradation)</h4>
         <table class="result-table">
             <tr>
                 <th>Year</th>
