@@ -12,13 +12,16 @@
         <form id="solarForm">
             <label for="panelWattage">Panel Wattage (W):</label>
             <input type="number" id="panelWattage" placeholder="Enter the wattage of a single panel" required>
-
+    
             <label for="panelCount">Number of Panels:</label>
             <input type="number" id="panelCount" placeholder="Enter the number of panels" required>
-
+    
+            <label for="degradationRate">Degradation Rate (% per year):</label>
+            <input type="number" id="degradationRate" placeholder="Recommended: 0.5" step="0.1" required>
+    
             <button type="button" onclick="calculateSolar()">Calculate</button>
         </form>
-        <div id="result" class="result"></div>
+        <div id="result" class="result" style="display: none;"></div>
     </div>
     <script src="script.js"></script>
 </body>

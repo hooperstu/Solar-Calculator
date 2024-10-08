@@ -33,13 +33,17 @@ label {
 }
 
 input[type="number"] {
-    width: 100%;
+    width: calc(100% - 20px);
+    max-width: 100%;
     padding: 12px;
     border: 1px solid #ccc;
     border-radius: 8px;
     margin-top: 5px;
     font-size: 16px;
     transition: border 0.3s ease-in-out;
+    box-sizing: border-box;
+}
+
 }
 
 input[type="number"]:focus {

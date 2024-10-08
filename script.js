@@ -2,13 +2,17 @@ function calculateSolar() {
     // Get the input values
     const panelWattage = parseFloat(document.getElementById('panelWattage').value);
     const panelCount = parseFloat(document.getElementById('panelCount').value);
+    let degradationRate = parseFloat(document.getElementById('degradationRate').value) / 100;
 
-    // Set a fixed degradation rate (e.g., 0.5% per year)
-    const degradationRate = 0.005;
+    // Set default degradation rate if the input is invalid
+    if (isNaN(degradationRate) || degradationRate < 0) {
+        degradationRate = 0.005; // Default to 0.5%
+    }
 
     // Check if inputs are valid
     if (isNaN(panelWattage) || isNaN(panelCount) || panelWattage <= 0 || panelCount <= 0) {
-        document.getElementById('result').innerHTML = '<p style="color:red;">Please enter valid values for panel wattage and number of panels.</p>';
+        document.getElementById('result').innerHTML = '<p style="color:red;">Please enter valid values for panel wattage, number of panels, and degradation rate.</p>';
+        document.getElementById('result').style.display = "block";
         return;
     }
 
@@ -38,7 +42,7 @@ function calculateSolar() {
         <p><strong>Total System Power:</strong> ${totalSystemPowerKW.toFixed(2)} kW</p>
         <p><strong>Initial Estimated Daily Energy Production:</strong> ${initialDailyEnergyProduction.toFixed(2)} kWh/day</p>
         <p><strong>Initial Estimated Annual Energy Production:</strong> ${initialAnnualEnergyProduction.toFixed(2)} kWh/year</p>
-        <h4>Estimated Annual Energy Production Over 10 Years (With 0.5% Degradation)</h4>
+        <h4>Estimated Annual Energy Production Over 10 Years (With ${degradationRate * 100}% Degradation)</h4>
         <table class="result-table">
             <tr>
                 <th>Year</th>
@@ -58,4 +62,5 @@ function calculateSolar() {
 
     resultHTML += `</table>`;
     document.getElementById('result').innerHTML = resultHTML;
+    document.getElementById('result').style.display = "block";
 }
