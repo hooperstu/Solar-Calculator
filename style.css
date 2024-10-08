@@ -30,6 +30,7 @@ label {
     font-size: 16px;
     font-weight: 500;
     margin-top: 15px;
+    text-align: left;
 }
 
 input[type="number"] {
@@ -49,6 +50,7 @@ input[type="number"] {
     font-size: 14px;
     margin-top: 5px;
     display: block;
+    text-align: left;
 }
 
 input[type="number"]:focus {
@@ -80,6 +82,7 @@ button:hover {
     background: #f8f9fa;
     border: 1px solid #e0e0e0;
     border-radius: 8px;
+    text-align: left;
 }
 
 .result h3, .result h4 {
